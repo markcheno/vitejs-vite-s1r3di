@@ -4,7 +4,7 @@ import { createRouter, createWebHistory, useRouter } from 'vue-router';
 import Home from './components/Home.vue';
 import Login from './components/Login.vue';
 import CreateAccount from './components/CreateAccount.vue';
-import ChangePassword from './components/ChangePassword.vue';
+import ResetPassword from './components/ResetPassword.vue';
 import { usePocketbase } from './composables/usePocketbase.js';
 
 // Vuetify
@@ -21,14 +21,14 @@ const router = createRouter({
     { path: '/home', component: Home, meta: { reqAuth: true } },
     { path: '/login', component: Login },
     { path: '/create-account', component: CreateAccount },
-    { path: '/change-password', component: ChangePassword },
+    { path: '/reset-password', component: ResetPassword },
   ],
 });
 
 router.beforeEach((to, from, next) => {
   const { pb } = usePocketbase();
 
-  if (to.meta?.reqAuth && !pb.value.isValid) {
+  if (to.meta?.reqAuth && !pb.value.authStore.isValid) {
     router.replace('/login');
   } else {
     next();

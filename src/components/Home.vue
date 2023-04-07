@@ -18,7 +18,9 @@ const router = useRouter();
 const currentUser = ref();
 
 onMounted(async () => {
-  currentUser.value = pb.value.authStore.isValid ? pb.value.model : null;
+  pb.value.authStore.onChange(() => {
+    currentUser.value = pb.value.authStore.model;
+  }, true);
 });
 
 const doLogout = () => {

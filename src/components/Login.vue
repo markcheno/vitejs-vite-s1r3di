@@ -1,4 +1,5 @@
 <template>
+  <v-card>
   <h2>Login</h2>
   <v-text-field
     v-model="username"
@@ -18,11 +19,14 @@
   />
   <div>
     <v-btn @click="doLogin">Login</v-btn>
-    <v-btn @click="($event) => router.push('/create-account')"
-      >Create Account</v-btn
-    >
   </div>
-  <router-link to="/change-password">Forgot Password?</router-link>
+  <div>
+    <router-link to="/create-account">Create Account?</router-link>
+  </div>
+  <div>
+    <router-link to="/reset-password">Forgot Password?</router-link>
+  </div>
+  </v-card>
 </template>
 
 <script setup>
@@ -32,21 +36,15 @@ import { usePocketbase } from '../composables/usePocketbase.js';
 
 const { pb } = usePocketbase();
 const router = useRouter();
-const currentUser = ref();
 const username = ref('');
 const password = ref('');
-
-onMounted(async () => {
-  pb.value.authStore.onChange(() => {
-    currentUser.value = pb.value.authStore.model;
-  }, true);
-});
 
 const doLogin = async () => {
   try {
     const authData = await pb.value
       .collection('users')
       .authWithPassword(username.value, password.value);
+    console.log('isValid=', pb.value.authStore.isValid);
     pb.value.authStore.isValid && router.replace('/home');
   } catch (error) {
     alert(error.message);

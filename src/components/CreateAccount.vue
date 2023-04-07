@@ -2,7 +2,7 @@
   <h2>Create Account</h2>
   <div>
     <v-text-field
-      v-model="username"
+      v-model="email"
       type="email"
       name="email"
       id="email"
@@ -12,7 +12,7 @@
   </div>
   <div>
     <v-text-field
-      v-model="password"
+      v-model="password1"
       type="password"
       name="password"
       id="password"
@@ -51,27 +51,17 @@ import { usePocketbase } from '../composables/usePocketbase.js';
 
 const { pb } = usePocketbase();
 const router = useRouter();
-const username = ref('');
-const password = ref('');
+const email = ref('');
+const password1 = ref('');
+const password2 = ref('');
 const fullname = ref('');
-
-const doLogin = async () => {
-  try {
-    const authData = await pb.value
-      .collection('users')
-      .authWithPassword(username.value, password.value);
-    pb.value.authStore.isValid && router.replace('/home');
-  } catch (error) {
-    alert(error.message);
-  }
-};
 
 const doCreateAccount = async () => {
   try {
     const data = {
-      email: username.value,
+      email: email.value,
       emailVisibility: true,
-      password: password.value,
+      password: password1.value,
       passwordConfirm: password2.value,
       name: fullname.value,
     };
@@ -79,7 +69,12 @@ const doCreateAccount = async () => {
     const record = await pb.value.collection('users').create(data);
 
     //await pb.value.collection('users').requestVerification('test@example.com');
-    await doLogin();
+
+    const authData = await pb.value
+      .collection('users')
+      .authWithPassword(email.value, password1.value);
+
+    pb.value.authStore.isValid && router.replace('/home');
   } catch (error) {
     alert(error.message);
   }
